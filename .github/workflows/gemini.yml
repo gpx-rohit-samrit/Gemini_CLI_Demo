@@ -33,7 +33,8 @@ jobs:
         run: npm install -g @google/gemini-cli
 
       - name: Run Gemini CLI (Java folder only)
-        run: gemini --include-directories ./src/main/java --yolo
+        run: gemini --include-directories ./src/main/java --yolo \
+          -p "Analyze this Vert.x Java project for code quality, performance, and maintainability. Suggest improvements."
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
@@ -48,4 +49,3 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
