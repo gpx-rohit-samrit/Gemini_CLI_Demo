@@ -20,7 +20,7 @@ jobs:
           java-version: '17'
 
       - name: Install Gemini CLI
-        run: npm install -g @google/gemini-cli
+        run: npm install -g @google/run-gemini-cli@v0
 
       - name: Run Gemini CLI
         run: gemini analyze --dir ./src/main/java
