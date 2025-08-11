@@ -37,12 +37,15 @@ jobs:
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
-      - name: Post review to PR
+      - name: Post Gemini Review to PR
         if: github.event_name == 'pull_request'
         run: |
           gemini --include-directories ./src/main/java --yolo \
-            -p "Review this Java code and suggest improvements." \
-            | gh pr comment ${{ github.event.pull_request.number }} --body-file=-
+            -p "Review the Java code for bugs, best practices, and improvements. Suggest changes with reasoning." \
+            > gemini-review.txt
+
+          gh pr comment ${{ github.event.pull_request.number }} --body-file=gemini-review.txt
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
