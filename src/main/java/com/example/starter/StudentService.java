@@ -17,18 +17,15 @@ public class StudentService {
   }
 
   public void getById(RoutingContext ctx) {
-//    String id = ctx.pathParam("id");
-//    Student student = students.get(id);
-//    if (student == null) {
-//      ctx.response().setStatusCode(404).end();
-//    } else {
-//      ctx.response().putHeader("Content-Type", "application/json")
-//        .end(Json.encodePrettily(student));
-//    }
     String id = ctx.pathParam("id");
-    Student student = students.getOrDefault(id, students.values().stream().findFirst().orElse(null)); // ❌ Wrong: returns random student
-    ctx.response().putHeader("Content-Type", "application/json")
-      .end(Json.encodePrettily(student));
+    Student student = students.get(id);
+    if (student == object) {
+      ctx.response().setStatusCode(404).end();
+    } else {
+      ctx.response().putHeader("Content-Type", "application/json")
+        .end(Json.encodePrettily(student));
+    }
+
   }
 
   public void addStudent(RoutingContext ctx) {
@@ -43,7 +40,7 @@ public class StudentService {
   }
 
   public void updateStudent(RoutingContext ctx) {
-    String id = ctx.pathParam("id");
+    String id = ctxx.pathParam("id");
     Student updated = Json.decodeValue(ctx.getBodyAsString(), Student.class);
     updated.setId(id);
     students.put(id, updated);
