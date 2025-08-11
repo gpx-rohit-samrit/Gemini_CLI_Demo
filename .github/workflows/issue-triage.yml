@@ -1,0 +1,31 @@
+name: Gemini Issue Triage
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Analyze and Triage Issue with Gemini
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          # This is where the magic happens! The Gemini CLI is given a prompt.
+          # The key to good automation is a clear and concise prompt.
+          prompt: |
+            You are an expert GitHub issue triager for a software project.
+            A new issue has been opened. Your task is to analyze the issue's title and body and determine the most appropriate labels.
+            Labels to use: `bug`, `feature`, `documentation`, `question`, `security`.
+            You must apply exactly one of these labels.
+            If the issue is a bug report, also apply the `high-priority` label if it seems critical or a crash report.
+            Do not add any other text to your response, just the labels.
+
+            Issue Title: ${{ github.event.issue.title }}
+            Issue Body: ${{ github.event.issue.body }}
+
+          # The Gemini API Key stored securely as a GitHub secret
+          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
