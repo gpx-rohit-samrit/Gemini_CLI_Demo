@@ -1,16 +1,21 @@
-name: Gemini CLI Analysis
+name: Gemini CLI Review
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
+    branches: [ main ]
+  push:
     branches: [ main ]
 
 jobs:
-  gemini-analysis:
+  gemini-review:
     runs-on: ubuntu-latest
+
+    permissions:
+      pull-requests: write   # Needed to comment on PRs
+      contents: read
+
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Java
@@ -19,8 +24,25 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Gemini CLI
-        run: npm install -g @google/run-gemini-cli@v0
+      - name: Install Node.js (for Gemini CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-      - name: Run Gemini CLI
-        run: gemini analyze --dir ./src/main/java
+      - name: Install Gemini CLI
+        run: npm install -g @google/gemini-cli
+
+      - name: Run Gemini CLI (Java folder only)
+        run: gemini --include-directories ./src/main/java --yolo
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Post review to PR
+        if: github.event_name == 'pull_request'
+        run: |
+          gemini --include-directories ./src/main/java --yolo \
+            -p "Review this Java code and suggest improvements." \
+            | gh pr comment ${{ github.event.pull_request.number }} --body-file=-
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
