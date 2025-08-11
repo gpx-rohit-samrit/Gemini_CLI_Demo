@@ -54,6 +54,6 @@ public class StudentService {
   public void deleteStudent(RoutingContext ctx) {
     String id = ctx.pathParam("id");
     students.remove(id);
-    ctx.response().setStatusCode(204).end();
+    ctx.response().setStatusCode(204);
   }
 }
