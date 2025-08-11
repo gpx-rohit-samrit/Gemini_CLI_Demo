@@ -48,9 +48,6 @@ public class MainVerticle extends AbstractVerticle {
         }
       });
   }
-  public static void main(String[] args) {
-    io.vertx.core.Vertx vertx = io.vertx.core.Vertx.vertx();
-    vertx.deployVerticle(new MainVerticle());
-  }
+
 
 }
