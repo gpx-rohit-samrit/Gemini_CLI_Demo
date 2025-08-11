@@ -33,15 +33,20 @@ jobs:
         run: npm install -g @google/gemini-cli
 
       - name: Run Gemini CLI (Java folder only)
-        run: gemini --include-directories ./src/main/java --yolo \
-          -p "Analyze this Vert.x Java project for code quality, performance, and maintainability. Suggest improvements."
+        run: |
+          gemini --include-directories ./src/main/java --yolo \
+            -p "Analyze this Vert.x Java project for bugs, best practices, and improvements. Suggest specific changes with reasoning."
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Post Gemini Review to PR
         if: github.event_name == 'pull_request'
-        run: gemini --include-directories ./src/main/java --yolo -p "Analyze this Vert.x Java project for code quality, performance, and maintainability. Suggest improvements."
-             gh pr comment ${{ github.event.pull_request.number }} --body-file=gemini-review.txt
+        run: |
+          gemini --include-directories ./src/main/java --yolo \
+            -p "Review the Java code for bugs, best practices, and improvements. Suggest changes with reasoning." \
+            > gemini-review.txt
+
+          gh pr comment ${{ github.event.pull_request.number }} --body-file=gemini-review.txt
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
