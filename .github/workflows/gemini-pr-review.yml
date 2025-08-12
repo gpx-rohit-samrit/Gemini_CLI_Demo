@@ -25,21 +25,23 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Gemini CLI
+      - name: Install Gemini CLI
         run: |
           curl -fsSL https://get.gemini-cli.dev/install.sh | bash
           echo "$HOME/.gemini/bin" >> $GITHUB_PATH
+          ls -la "$HOME/.gemini/bin"
 
       - name: Authenticate Gemini CLI
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: gemini auth --api-key "$GEMINI_API_KEY"
+        run: |
+          gemini --version
+          gemini auth --api-key "$GEMINI_API_KEY"
 
       - name: Run PR Review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Determine PR number for auto/manual triggers
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             PR_NUMBER="${{ github.event.inputs.pr_number }}"
           elif [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -52,4 +54,3 @@ jobs:
           gemini review-pr --pr "$PR_NUMBER" \
             --always-post-summary \
             --focus "security, performance, maintainability"
-
