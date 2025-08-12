@@ -25,33 +25,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Gemini CLI
-        run: |
-          curl -fsSL https://get.gemini-cli.dev/install.sh | bash
-          echo "$HOME/.gemini/bin" >> $GITHUB_PATH
-          ls -la "$HOME/.gemini/bin"
+      - name: Run Gemini CLI PR Review
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          prompt: |
+            You are an expert code reviewer. Please review this pull request with focus on:
+            - Security vulnerabilities
+            - Performance issues
+            - Code maintainability
+            - Best practices
 
-      - name: Authenticate Gemini CLI
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: |
-          gemini --version
-          gemini auth --api-key "$GEMINI_API_KEY"
-
-      - name: Run PR Review
+            Provide constructive feedback and suggestions for improvement.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            PR_NUMBER="${{ github.event.inputs.pr_number }}"
-          elif [ "${{ github.event_name }}" = "pull_request" ]; then
-            PR_NUMBER="${{ github.event.pull_request.number }}"
-          elif [ "${{ github.event_name }}" = "issue_comment" ]; then
-            PR_NUMBER="${{ github.event.issue.number }}"
-          fi
-
-          echo "Reviewing PR #$PR_NUMBER..."
-          gemini review-pr --pr "$PR_NUMBER" \
-            --always-post-summary \
-            --focus "security, performance, maintainability"
-
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
