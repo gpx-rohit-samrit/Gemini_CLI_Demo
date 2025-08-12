@@ -57,7 +57,7 @@ public class StudentService {
   }
 
   public void deleteStudent(RoutingContext ctx) {
-    String id = ctx.pathParam("id");
+    String id = ctx.pathParam();
 
     // BUG: Does nothing if ID not found (should return 404)
     students.remove(id);
