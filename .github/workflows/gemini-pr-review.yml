@@ -95,7 +95,7 @@ jobs:
           fi
 
       - name: 'Run Gemini PR Review'
-        uses: 'google-github-actions/genkit-action@v1'
+        uses: 'google-github-actions/genkit-action@v1' # Correct action name
         id: 'gemini_pr_review'
         env:
           GEMINI_API_KEY: '${{ secrets.GEMINI_API_KEY }}'
